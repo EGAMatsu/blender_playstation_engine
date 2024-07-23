@@ -470,13 +470,15 @@ void * calloc(size_t len, size_t count)
 {
 	uchar * pnt;
 	
-	guru("hi hi, in calloc\n");
+	//guru("hi hi, in calloc\n");
 	
 	pnt = malloc(len * count);
 	if (pnt) bzero(pnt, len * count);
 	
 	return(pnt);
 }
+
+// Why the fuck did you do that, blender team?
 
 void * realloc(void * pnt, size_t len)
 {

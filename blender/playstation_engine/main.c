@@ -353,7 +353,7 @@ void make_menu()
 	}
 
 	frontbuffer(1);
-	event= do_menu(1, &val);
+	event = do_menu(1, &val);
 	if(event) do_event(event, val);
 	frontbuffer(0);
 
