@@ -390,12 +390,12 @@ int main() {
 		init_psxutil();	/* malloc */
 	printf("Starting Display.\n");
 		init_display();	// Causes crash, 226 -> ~232
-	//set_divbuffer();
-	//init_blackpoly();
-	//init_blendpsx();
+	set_divbuffer();
+	init_blackpoly();
+	init_blendpsx();
 	//init_sound();
 	printf("Loading font.\n");
-	load_menu_font();
+		load_menu_font();
 	
 
 	// set_dcache(1);	/* psxutil.c */

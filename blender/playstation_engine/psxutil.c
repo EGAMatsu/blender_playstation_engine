@@ -547,7 +547,7 @@ char *block,*error;
 
 void (*memory_error)() = MemorY_ErroR;
 
-void *mallocN(long len, char *str)	{
+void *mallocN(long len, char *str) {
 	MemHead *memh;
 	MemTail *memt;
 	static char buf[128];
@@ -560,43 +560,41 @@ void *mallocN(long len, char *str)	{
 
 	mallocNmalloc = TRUE;
 	
-	len = (len + 3 ) & ~3; 	/* eenheden van 4 */
+	len = (len + 3 ) & ~3; 	/* units of 4 */
 	memh=(MemHead *)malloc(len+sizeof(MemHead)+sizeof(MemTail));
 
 	mallocNmalloc = FALSE;
 	
-	if(memh!=0) {
-		if( ((int)memh)+len > (int) MALLOCSTA + MALLOCSIZE ) {
-			sprintf(gurustr, "Malloc beyond max:\nlen=%d in %s\n",len, str);
-			sprintf(gurustr, "Malloc overflow in %s:\n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
-			guru(gurustr);
-			
-			// return 0;
-			
-		}
-
-		memh->tag1 = MEMTAG1;
-		memh->name = str;
-		memh->nextname = 0;
-		memh->len = len;
-		memh->level = current_mem_level;
-		memh->tag2 = MEMTAG2;
-
-		memt = (MemTail *)(((char *) memh) + sizeof(MemHead) + len);
-		memt->tag3 = MEMTAG3;
-
-		addtail(membase,&memh->next);
-		if (memh->next) memh->nextname = MEMNEXT(memh->next)->name;
-
-		totblock++;
-		mem_in_use += len;
-		return (++memh);
+	if(memh==0) {
+		sprintf(buf, "Malloc returns nill:\nlen=%d in %s\n",len,str);
+		guru(buf);
+		return 0;
 	}
 	
-	sprintf(buf, "Malloc returns nill:\nlen=%d in %s\n",len,str);
-	guru(buf);
-	
-	return 0;
+	if( ((int)memh)+len > (int) MALLOCSTA + MALLOCSIZE ) {
+		sprintf(gurustr, "Malloc beyond max:\nlen=%d in %s\n",len, str);
+		sprintf(gurustr, "Malloc overflow in %s:\n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
+		guru(gurustr);
+		free(memh);
+		return 0;
+	}
+
+	memh->tag1 = MEMTAG1;
+	memh->name = str;
+	memh->nextname = 0;
+	memh->len = len;
+	memh->level = current_mem_level;
+	memh->tag2 = MEMTAG2;
+
+	memt = (MemTail *)(((char *) memh) + sizeof(MemHead) + len);
+	memt->tag3 = MEMTAG3;
+
+	addtail(membase,&memh->next);
+	if (memh->next) memh->nextname = MEMNEXT(memh->next)->name;
+
+	totblock++;
+	mem_in_use += len;
+	return memh; // return the allocated memory, not the next block
 }
 
 void *callocN(len,str)

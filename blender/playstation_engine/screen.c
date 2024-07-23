@@ -28,6 +28,7 @@
  *					 - screen_examin
  *
  */
+#define NEW_WAYS
 
 #include "psxdef.h"
 #include "psxgraph.h"
@@ -227,32 +228,68 @@ void init_display()
 	printf("update display environment.\n");
 		PutDispEnv(&db0->disp); /* update display environment */
 	
-	printf("db0->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
-		db0->pbuf= mallocN(PBUFSIZE, "pbuf");				// Causes first crash, assume the ones below cause more.
-	printf("db1->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
-		db1->pbuf= mallocN(PBUFSIZE, "pbuf");
-	printf("db0->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
-		db0->dbuf= mallocN(DBUFSIZE, "dbuf");
-	printf("db1->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
-		db1->dbuf= mallocN(DBUFSIZE, "dbuf");
+	#ifndef NEW_WAYS
+	printf("Doing it the old way (Expect issues.): \n\n");
+		printf("db0->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
+			db0->pbuf= mallocN(PBUFSIZE, "pbuf");				// Causes first crash, assume the ones below cause more.
+		printf("db1->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
+			db1->pbuf= mallocN(PBUFSIZE, "pbuf");
+		printf("db0->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
+			db0->dbuf= mallocN(DBUFSIZE, "dbuf");
+		printf("db1->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
+			db1->dbuf= mallocN(DBUFSIZE, "dbuf");
 
-	db0->maxpbuf= db0->pbuf + PBUFSIZE;
-	db1->maxpbuf= db1->pbuf + PBUFSIZE;
-	db0->curpbuf= db0->pbuf;
-	db1->curpbuf= db1->pbuf;
+		db0->maxpbuf= db0->pbuf + PBUFSIZE;
+		db1->maxpbuf= db1->pbuf + PBUFSIZE;
+		db0->curpbuf= db0->pbuf;
+		db1->curpbuf= db1->pbuf;
 
-	db0->maxdbuf= db0->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
-	db1->maxdbuf= db1->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
-	db0->curdbuf= db0->dbuf;
-	db1->curdbuf= db1->dbuf;
+		db0->maxdbuf= db0->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
+		db1->maxdbuf= db1->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
+		db0->curdbuf= db0->dbuf;
+		db1->curdbuf= db1->dbuf;
 
-	db0->ot= mallocN(4*OTSIZE, "ot");
-	db1->ot= mallocN(4*OTSIZE, "ot");
+		db0->ot= mallocN(4*OTSIZE, "ot");
+		db1->ot= mallocN(4*OTSIZE, "ot");
+	#else 
+		printf("Doing it the new way (Expect jank.): \n\n");
+		printf("Setting pbuf arrays...\n");
+			db0->pbuf = malloc(PBUFSIZE);
+			db1->pbuf = malloc(PBUFSIZE);
+		printf("Setting dbuf arrays...\n");
+			db0->dbuf = malloc(DBUFSIZE);
+			db1->dbuf = malloc(DBUFSIZE);
+		
+		printf("Setting max pbuf size...\n");
+			db0->maxpbuf= db0->pbuf + PBUFSIZE;
+			db1->maxpbuf= db1->pbuf + PBUFSIZE;
+			db0->curpbuf= db0->pbuf;
+			db1->curpbuf= db1->pbuf;
 
-	ClearOTagR(db0->ot, OTSIZE);	// clear ordering table
-	ClearOTagR(db1->ot, OTSIZE);	// clear ordering table
+		printf("Setting max dbuf size...\n");
+			db0->maxdbuf= db0->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
+			db1->maxdbuf= db1->dbuf + DBUFSIZE-16*sizeof(POLY_GT4);
+			db0->curdbuf= db0->dbuf;
+			db1->curdbuf= db1->dbuf;
+
+		printf("Setting max order table size...\n");
+			db0->ot = malloc(4*OTSIZE);
+			db1->ot = malloc(4*OTSIZE);
+
+	#endif
+
+	printf("Clearing order tables.\n");
+		#ifndef NEW_WAYS
+			ClearOTagR(db0->ot, OTSIZE);
+			ClearOTagR(db1->ot, OTSIZE);
+		#else
+			memset(db0->ot, 0, 4*OTSIZE);
+			memset(db1->ot, 0, 4*OTSIZE);
+		#endif
 
 	cdb= db0;
+
+	printf("Done starting screen.\n");
 }	
 
 void end_display()
