@@ -1,0 +1,70 @@
+;
+;	ALLEEN EDITEN ALLEEN MET DOS ENTERS
+;
+;
+
+;	-Xo$80010000 -Xm
+
+	include 	"..\joeri\psxdbox.obj"
+	include 	"..\joeri\button.obj"
+	include 	"..\joeri\psxfont.obj"
+	include		"..\joeri\fbmm.obj"
+	include		"movie.obj"
+	include 	"..\rob\psxsound.obj"
+
+
+
+	include "blendpsx.obj"
+	include "drawmesh.obj"
+	include "main01.obj"
+	include "psxutil.obj"
+	include "readbpsx.obj"
+	include "screen.obj"
+	include "viewpsx.obj"
+	include "psector.obj"
+	include "pobject.obj"
+	include "plife.obj"
+	include "arithp.obj"
+	include "peffect.obj"
+	include "sectormv.obj"
+	include 	"..\lib\2mbyte.obj"
+
+text    group                           ; main text group
+bss     group   bss                     ; main data group
+
+	org     $80018000
+
+
+	section .rdata,text      ; main sections
+	section .text,text
+	section .data,text
+	section .sdata,text
+	section .sbss,bss
+	section .bss,bss
+
+
+	inclib  "c:\psx\lib\libapi.lib"
+	inclib  "c:\psx\lib\libgpu.lib"
+	inclib  "c:\psx\lib\libgte.lib"
+	inclib  "c:\psx\lib\libetc.lib"
+	inclib  "c:\psx\lib\libcd.lib"
+	inclib  "c:\psx\lib\libpress.lib"
+	inclib  "c:\psx\lib\libc2.lib"
+	inclib  "c:\psx\lib\libspu.lib"
+	inclib  "c:\psx\lib\libsnd.lib"
+	inclib 	"c:\psx\lib\libmath.lib"
+
+	; none2 for live system, libsn for development
+	inclib  "c:\psx\lib\libsn.lib"
+	; inclib  "..\none2.lib"
+
+	regs 	pc=__SN_ENTRY_POINT     ; entry point
+
+;
+;	linkfile van paul holman
+;	
+; 	eg psylink /m /c /g @dd.lnk,main.cpe,main.sym,main.map
+;
+;
+;
+
