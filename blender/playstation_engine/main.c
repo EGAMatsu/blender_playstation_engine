@@ -384,22 +384,20 @@ void test()
 
 	PRINT3(d,d,d, new.vx, new.vy, new.vz);
 }
-
-int main();
-__libc_start_main()
-{
-	main();
-}
  
 int main() {
 	int a, padd, event, val;
+	printf("Blender Game Engine is init...\n");
 
-	init_psxutil();	/* malloc */
-	init_display();
-	set_divbuffer();
-	init_blackpoly();
-	init_blendpsx();
+	printf("Starting PSXUTIL.\n");
+		init_psxutil();	/* malloc */
+	printf("Starting Display.\n");
+		init_display();
+	//set_divbuffer();
+	//init_blackpoly();
+	//init_blendpsx();
 	// init_sound();
+	printf("Loading font.\n");
 	load_menu_font();
 	
 

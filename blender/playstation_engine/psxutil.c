@@ -913,21 +913,22 @@ void init_psxutil()
 	ResetCallback();
 
 	// first check if we're running on the pc or the ps
+	is_cd = 0;
 	
-		CdInit();
-		CdSetDebug(0);
+		//CdInit();
+		//CdSetDebug(0);
 	
-		if (CdControl(CdlNop, 0, result)) is_cd = 1;
-		else is_cd = 0;
+		//if (CdControl(CdlNop, 0, result)) is_cd = 1;
+		//else is_cd = 0;
 
 	// initialiseer malloc
 	
 		if (is_cd) {
 			// dit is 1.5 megabyte (vanaf 0.48Mb) gereserveerd
-			// InitHeap2((void *) 0x80078000, 0x180000);
+			InitHeap2((void *) 0x80078000, 0x180000);
 		} else {
 			// dit is 2 megabyte (vanaf 2 Mb)gereserveerd
-			// InitHeap2((void *) MALLOCSTA, MALLOCSIZE);
+			InitHeap2((void *) MALLOCSTA, MALLOCSIZE);
 		}
 	
 	// onschuldige initialiseer functies
