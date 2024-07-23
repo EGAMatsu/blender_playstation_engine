@@ -13,6 +13,8 @@ For now, changes that could make the engine unstable/broken are permitted, as lo
 # Current Progress
 Completely compiles and links and launches, but immedately crashes.
 
+# Current LICENSE
+
  * ***** BEGIN GPL/BL DUAL LICENSE BLOCK *****
  *
  * The contents of this file may be used under the terms of either the GNU
