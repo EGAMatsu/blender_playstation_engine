@@ -11,5 +11,5 @@ I am hoping members of the PSX Development community can help make the engine ru
 For now, changes that could make the engine unstable/broken are permitted, as long as it gets it to compile and link, then after, the engine should be polished up and put back into a fully functional (or whatever condition it was when released) state.
 
 # Current Progress
-All source files compile, but cannot link fully.\
-[Here is the logs from the last compile with a different outcome.](https://pastebin.com/raw/ubR7jAMB)
+Completely compiles and links, does not launch.\
+[Here is the logs from the last compile with a different outcome.](https://pastebin.com/raw/N0cwxCYQ)
