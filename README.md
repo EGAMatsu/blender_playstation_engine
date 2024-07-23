@@ -12,4 +12,4 @@ For now, changes that could make the engine unstable/broken are permitted, as lo
 
 # Current Progress
 All source files compile, but cannot link fully.\
-[Here is the logs from the last compile with a different outcome.](https://pastebin.com/raw/DhW2kef9)
+[Here is the logs from the last compile with a different outcome.](https://pastebin.com/raw/ubR7jAMB)
