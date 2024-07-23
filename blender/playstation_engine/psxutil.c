@@ -914,7 +914,11 @@ void init_psxutil()
 
 	// first check if we're running on the pc or the ps
 	is_cd = 0;
-	
+	/*
+		DISABLE CD TO PREVENT POSSIBLE HEAP CRASH IN THE FUTURE.
+
+		THIS IS A TEMPORARY THING, ENABLE LATER.
+	*/
 		//CdInit();
 		//CdSetDebug(0);
 	

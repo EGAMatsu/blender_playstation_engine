@@ -105,84 +105,131 @@ void viewmove()
 void init_display()
 {
 	/* altijd doublebuffer */
-	DB *db0, *db1;
+	printf("Defining the buffer pointers.\n");
+		DB *db0, *db1;
 	
 	/* reset graphic system */
-	PadInit(0);			/* reset PAD */
-	ResetGraph(0);		/* reset graphic subsystem (0:cold,1:warm) */
-	SetGraphDebug(0);	/* set debug mode (0:off, 1:monitor, 2:dump) */
-	InitGeom();			/* initialize geometry subsystem */
- 	SetDispMask(1);		/* enable to display (0:inhibit, 1:enable) */
+	printf("reset PAD.\n");
+		PadInit(0);			/* reset PAD */
+	printf("reset graphic subsystem.\n");
+		ResetGraph(0);		/* reset graphic subsystem (0:cold,1:warm) */
+	printf("set debug mode.\n");
+		SetGraphDebug(0);	/* set debug mode (0:off, 1:monitor, 2:dump) */
+	printf("Reinitialize geometry subsystem.\n");
+		InitGeom();			/* initialize geometry subsystem */
+	printf("enable to display.\n");
+		SetDispMask(1);		/* enable to display (0:inhibit, 1:enable) */
 
-	SetRCnt(RCntCNT1,0xffff,RCntMdINTR|RCntMdFR);
-	StartRCnt(RCntCNT1);
+	printf("SetRCnt(RCntCNT1,0xffff,RCntMdINTR|RCntMdFR);\n");
+		SetRCnt(RCntCNT1,0xffff,RCntMdINTR|RCntMdFR);
+	printf("StartRCnt(RCntCNT1);\n");
+		StartRCnt(RCntCNT1);
 
-	db0= &db[0];
-	db1= &db[1];
+	printf("Setting the buffer pointers.\n");
+		db0= &db[0];
+		db1= &db[1];
+	printf("Done with that, now setting the mode...\n");
 
    	if(HIRES && LACE && PAL) 
 	{	
-		SetDefDrawEnv(&db0->draw, 0, 0, 640, 512);
-		SetDefDrawEnv(&db1->draw, 0, 0, 640, 512);
-		SetDefDispEnv(&db0->disp, 0, 0, 640, 512);
-		SetDefDispEnv(&db1->disp, 0, 0, 640, 512);
+		printf("SetDefDrawEnv call 0.\n");
+			SetDefDrawEnv(&db0->draw, 0, 0, 640, 512);
+		printf("SetDefDrawEnv call 1.\n");
+			SetDefDrawEnv(&db1->draw, 0, 0, 640, 512);
+		printf("SetDefDrawEnv call 2.\n");
+			SetDefDispEnv(&db0->disp, 0, 0, 640, 512);
+		printf("SetDefDrawEnv call 3.\n");
+			SetDefDispEnv(&db1->disp, 0, 0, 640, 512);
 
-		db0->disp.isinter= db1->disp.isinter= 1;
-		SetGeomOffset(320, 256);
+		printf("db0->disp.isinter= db1->disp.isinter= 1;\n");
+			db0->disp.isinter= db1->disp.isinter= 1;
+		printf("SetGeomOffset(320, 256);\n");
+			SetGeomOffset(320, 256);
 
-		fb_add(  0,   0,  640, 256, "Screen1");
-		fb_add(  0, 256,  640, 256, "Screen2");
+		printf("fb_add(  0,   0,  640, 256, \"Screen1\");\n");
+			fb_add(  0,   0,  640, 256, "Screen1");
+		printf("fb_add(  0, 256,  640, 256, \"Screen2\");\n");
+			fb_add(  0, 256,  640, 256, "Screen2");
 
 	}		
    	else if(HIRES && PAL) 
 	{	
-		SetDefDrawEnv(&db0->draw, 0, 0, 512, 256);
-		SetDefDrawEnv(&db1->draw, 512, 0, 512, 256);
-		SetDefDispEnv(&db0->disp, 512, 0, 512, 256);
-		SetDefDispEnv(&db1->disp, 0, 0, 512, 256);
+		printf("SetDefDrawEnv call 0.\n");
+			SetDefDrawEnv(&db0->draw, 0, 0, 512, 256);
+		printf("SetDefDrawEnv call 1.\n");
+			SetDefDrawEnv(&db1->draw, 512, 0, 512, 256);
+		printf("SetDefDrawEnv call 2.\n");
+			SetDefDispEnv(&db0->disp, 512, 0, 512, 256);
+		printf("SetDefDrawEnv call 3.\n");
+			SetDefDispEnv(&db1->disp, 0, 0, 512, 256);
 
-		db0->disp.isinter= db1->disp.isinter= 0;
-		SetGeomOffset(256, 128);
+		printf("db0->disp.isinter= db1->disp.isinter= 0;\n");
+			db0->disp.isinter= db1->disp.isinter= 0;
+		printf("tGeomOffset(256, 128);\n");
+			SetGeomOffset(256, 128);
 
-		fb_add(  0,   0, 512, 256, "Screen1");
-		fb_add(  512,   0, 512, 256, "Screen2");
+		printf("fb_add(  0,   0, 512, 256, \"Screen1\");\n");
+			fb_add(  0,   0, 512, 256, "Screen1");
+		printf("fb_add(  512,   0, 512, 256, \"Screen2\");\n");
+			fb_add(  512,   0, 512, 256, "Screen2");
 	}		
 	else if(PAL) 
 	{	
-		SetDefDrawEnv(&db0->draw, 0,   0, 320, 256);
-		SetDefDrawEnv(&db1->draw, 320, 0, 320, 256);
-		SetDefDispEnv(&db0->disp, 320, 0, 320, 256);
-		SetDefDispEnv(&db1->disp, 0, 0,   320, 256);
+		printf("SetDefDrawEnv call 0.\n");
+			SetDefDrawEnv(&db0->draw, 0,   0, 320, 256);
+		printf("SetDefDrawEnv call 1.\n");
+			SetDefDrawEnv(&db1->draw, 320, 0, 320, 256);
+		printf("SetDefDrawEnv call 2.\n");
+			SetDefDispEnv(&db0->disp, 320, 0, 320, 256);
+		printf("SetDefDrawEnv call 3.\n");
+			SetDefDispEnv(&db1->disp, 0, 0,   320, 256);
 
-		db0->disp.isinter= db1->disp.isinter= 0;
-		SetGeomOffset(160, 128); 
+		printf("db0->disp.isinter= db1->disp.isinter= 0;\n");
+			db0->disp.isinter= db1->disp.isinter= 0;
+		printf("SetGeomOffset(160, 128); \n");
+			SetGeomOffset(160, 128); 
 
-		fb_add(  0,   0, 320, 256, "Screen1");
-		fb_add(  320, 0, 320, 256, "Screen2");
+		printf("fb_add(  0,   0, 320, 256, \"Screen1\");\n");
+			fb_add(  0,   0, 320, 256, "Screen1");
+		printf("fb_add(  320,   0, 320, 256, \"Screen2\");\n");
+			fb_add(  320, 0, 320, 256, "Screen2");
 
 	}		
 	
 	if(PAL) 
 	{
-		SetVideoMode(MODE_PAL);
-		db0->disp.screen.x= db1->disp.screen.x= 0;
-		db0->disp.screen.y= db1->disp.screen.y= 16;
-		db0->disp.screen.h= db1->disp.screen.h= 256;
-		db0->disp.screen.w= db1->disp.screen.w= 256;
+		printf("SetVideoMode(MODE_PAL);\n");
+			SetVideoMode(MODE_PAL);
+		printf("db0->disp.screen.x= db1->disp.screen.x= 0;\n");
+			db0->disp.screen.x= db1->disp.screen.x= 0;
+		printf("db0->disp.screen.y= db1->disp.screen.y= 16;\n");
+			db0->disp.screen.y= db1->disp.screen.y= 16;
+		printf("db0->disp.screen.h= db1->disp.screen.h= 256;\n");
+			db0->disp.screen.h= db1->disp.screen.h= 256;
+		printf("db0->disp.screen.w= db1->disp.screen.w= 256;\n");
+			db0->disp.screen.w= db1->disp.screen.w= 256;
 	}
 	
-	db0->draw.dtd= db1->draw.dtd= 1;	/* dither flag */
-	db0->draw.isbg= db1->draw.isbg= 1;	/* clear drawing env */
-	db0->draw.r0= 0;
-	db1->draw.r0= 0;
+	printf("Set dither flag.\n");
+		db0->draw.dtd= db1->draw.dtd= 1;	/* dither flag */
+	printf("Clear drawing env\n");
+		db0->draw.isbg= db1->draw.isbg= 1;	/* clear drawing env */
+		db0->draw.r0= 0;
+		db1->draw.r0= 0;
 	
-	PutDrawEnv(&db0->draw); /* update drawing environment */
-	PutDispEnv(&db0->disp); /* update display environment */
+	printf("update drawing environment.\n");
+		PutDrawEnv(&db0->draw); /* update drawing environment */
+	printf("update display environment.\n");
+		PutDispEnv(&db0->disp); /* update display environment */
 	
-	db0->pbuf= mallocN(PBUFSIZE, "pbuf");
-	db1->pbuf= mallocN(PBUFSIZE, "pbuf");
-	db0->dbuf= mallocN(DBUFSIZE, "dbuf");
-	db1->dbuf= mallocN(DBUFSIZE, "dbuf");
+	printf("db0->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
+		db0->pbuf= mallocN(PBUFSIZE, "pbuf");				// Causes first crash, assume the ones below cause more.
+	printf("db1->pbuf= mallocN(PBUFSIZE, \"pbuf\");\n");
+		db1->pbuf= mallocN(PBUFSIZE, "pbuf");
+	printf("db0->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
+		db0->dbuf= mallocN(DBUFSIZE, "dbuf");
+	printf("db1->pbuf= mallocN(PBUFSIZE, \"dbuf\");\n");
+		db1->dbuf= mallocN(DBUFSIZE, "dbuf");
 
 	db0->maxpbuf= db0->pbuf + PBUFSIZE;
 	db1->maxpbuf= db1->pbuf + PBUFSIZE;

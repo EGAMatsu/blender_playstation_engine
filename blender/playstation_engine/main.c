@@ -396,7 +396,7 @@ int main() {
 	//set_divbuffer();
 	//init_blackpoly();
 	//init_blendpsx();
-	// init_sound();
+	//init_sound();
 	printf("Loading font.\n");
 	load_menu_font();
 	
