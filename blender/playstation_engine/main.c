@@ -402,10 +402,9 @@ int main() {
 
 	fb_add(960, 0,   64, 256, "MenuFont");
 	G.font= set_font("fonts\\cour8.psf", 960, 0);
-	
 	if(G.font==0) {
 		error("Can't find font");
-		exit(0);
+		//exit(0);
 	}
 	set_font_prop(G.font, 0);
 
@@ -419,13 +418,15 @@ int main() {
 
 	/* main loop */
 	while(TRUE) {
-		
+		/*
 		if(G.f & G_LOADFILE) read_file();
 		if(G.f & G_RESTART) G.f &= ~G_RESTART;
 		if(G.f & G_QUIT) exit_func();
 
 		if(G.scene) sector_go();
 		else make_menu(); 
+		*/
+		make_menu(); 
 	}
 	return 0;
 }
