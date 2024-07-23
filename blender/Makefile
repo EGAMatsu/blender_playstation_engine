@@ -1,4 +1,4 @@
-TARGET = blender
+TARGET = engine
 TYPE = ps-exe
 
 SRCS = \
