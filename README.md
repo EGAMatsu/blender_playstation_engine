@@ -1,5 +1,5 @@
 # blender_playstation_engine
-An attempt to make the Blender Game Engine for PlayStation 1 compile.
+An attempt to make the Blender Game Engine for PlayStation 1 compile and run.
 
 # The Goal
 So, back in the 90s, when the creator of blender had the company NaN, the company worked on a Blender Game Engine runtime for the PlayStation 1, [which you can get here.](https://download.blender.org/source/chest/neogeo/playstation_engine/)
