@@ -392,7 +392,7 @@ int main() {
 	printf("Starting PSXUTIL.\n");
 		init_psxutil();	/* malloc */
 	printf("Starting Display.\n");
-		init_display();
+		init_display();	// Causes crash, 226 -> ~232
 	//set_divbuffer();
 	//init_blackpoly();
 	//init_blendpsx();
