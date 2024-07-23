@@ -54,9 +54,6 @@ void load_menu_font() {
 void free_menu_font() {
 	return 0;
 }
-void fb_add() {
-	return 0;
-}
 
 void draw_text_info()
 {

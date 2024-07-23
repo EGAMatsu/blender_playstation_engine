@@ -32,6 +32,11 @@
 #include "psxdef.h"
 #include "psxgraph.h"
 
+void fb_add(int x, int y, int width, int height, const char* fbName) {
+		printf("fb_add called with x=%d, y=%d, width=%d, height=%d, fbName=%s\n", x, y, width, height, fbName);
+	return 0;
+}
+
 DB db[2];
 DB *cdb= db;
 
