@@ -547,10 +547,7 @@ char *block,*error;
 
 void (*memory_error)() = MemorY_ErroR;
 
-void *mallocN(len,str)
-long len;
-char *str;
-{
+void *mallocN(long len, char *str)	{
 	MemHead *memh;
 	MemTail *memt;
 	static char buf[128];
@@ -570,8 +567,8 @@ char *str;
 	
 	if(memh!=0) {
 		if( ((int)memh)+len > (int) MALLOCSTA + MALLOCSIZE ) {
-			sprintf(gurustr, "Malloc beyond max: \nlen=%d in %s\n",len, str);
-			sprintf(gurustr, "Malloc overflow in %s: \n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
+			sprintf(gurustr, "Malloc beyond max:\nlen=%d in %s\n",len, str);
+			sprintf(gurustr, "Malloc overflow in %s:\n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
 			guru(gurustr);
 			
 			// return 0;
@@ -596,7 +593,7 @@ char *str;
 		return (++memh);
 	}
 	
-	sprintf(buf, "Malloc returns nill: len=%d in %s\n",len,str);
+	sprintf(buf, "Malloc returns nill:\nlen=%d in %s\n",len,str);
 	guru(buf);
 	
 	return 0;
