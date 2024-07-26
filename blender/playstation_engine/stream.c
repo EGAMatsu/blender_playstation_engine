@@ -1,31 +1,8 @@
-/**
- * $Id:$
- * ***** BEGIN GPL/BL DUAL LICENSE BLOCK *****
- *
- * The contents of this file may be used under the terms of either the GNU
- * General Public License Version 2 or later (the "GPL", see
- * http://www.gnu.org/licenses/gpl.html ), or the Blender License 1.0 or
- * later (the "BL", see http://www.blender.org/BL/ ) which has to be
- * bought from the Blender Foundation to become active, in which case the
- * above mentioned GPL option does not apply.
- *
- * The Original Code is Copyright (C) 1997 by Ton Roosendaal, Frank van Beek and Joeri Kassenaar.
- * All rights reserved.
- *
- * The Original Code is: all of this file.
- *
- * Contributor(s): none yet.
- *
- * ***** END GPL/BL DUAL LICENSE BLOCK *****
- */
-
 #include <sys/types.h>
-
 #include <sys/file.h>
 #include <libetc.h>
 
 #include "psxutil.h"
-#include "file.h"
 
 cdsector * cdcache = 0;
 
@@ -53,11 +30,12 @@ void cdreadycallback(uchar , uchar * );
 
 void streaming_stop()
 {
-	if (CdReadyCallback(0) != cdreadycallback) return;
+	if (CdReadyCallback(0) == cdreadycallback) CdControl(CdlPause, 0, 0);
 	
-	CdControlB( CdlPause, 0, 0 );
-	if (active_c_file) active_c_file->busy = FALSE;
-	active_c_file = 0;
+	if (active_c_file) {
+		active_c_file->busy = FALSE;
+		active_c_file = 0;
+	}
 }
 
 void c_file_start(C_File * c_file)
@@ -69,17 +47,23 @@ void c_file_start(C_File * c_file)
 		return;
 	}
 	
+	if ((int) c_file == -1) {
+		guru("c_file_start: c_file = -1");
+		return;
+	}
+	
 	if (c_file->index == 0) {
 		guru("c_file_start: c_file->index = NULL");
 		return;
 	}
 	
-	// guru("c_file_start");
-
+	if (active_c_file) active_c_file->busy = FALSE;
+	
 	c_file->done = FALSE;
 	c_file->busy = TRUE;
 	
-	if ((c_file->sectorseek < 0) | (c_file->sectorseek > c_file->maxsector)) c_file->sectorseek = 0;
+	if (c_file->lastsector > c_file->maxsector) c_file->lastsector = c_file->maxsector;
+	if ((c_file->sectorseek < c_file->firstsector) | (c_file->sectorseek > c_file->lastsector)) c_file->sectorseek = c_file->firstsector;
 	
 	active_c_file = c_file;
 	c_next_sector = active_c_file->start + active_c_file->sectorseek;
@@ -116,8 +100,6 @@ void cdreadycallback(uchar status, uchar * result)
 						if (index != 256) {
 							CdGetSector(&header, 3);						
 							if (CdGetSector(&cdcache[index].data, 512)) {
-
-							// if (CdGetSector(&cdcache[index], sizeof(cdcache[index]) / 4)) {
 								// hier nog controleren of sector de juiste is...
 
 								c_read_sector = CdPosToInt(&header.cdloc);
@@ -137,12 +119,12 @@ void cdreadycallback(uchar status, uchar * result)
 										} else {
 											// we gaan springen want dit gedeelte is nog gecached...
 											
-											for (index = offset; index <= active_c_file->maxsector; index++) {
+											for (index = offset; index <= active_c_file->lastsector; index++) {
 												if (active_c_file->index[index] == 0) break;
 											}
 											active_c_file->sectorseek = index;
 											
-											if (active_c_file->sectorseek > active_c_file->maxsector) active_c_file->done = TRUE;
+											if (active_c_file->sectorseek > active_c_file->lastsector) active_c_file->done = TRUE;
 										}
 										
 										if (offset == active_c_file->sectorseek) {
@@ -150,7 +132,7 @@ void cdreadycallback(uchar status, uchar * result)
 	
 											active_c_file->sectorseek++;
 											
-											if (active_c_file->sectorseek > active_c_file->maxsector) {
+											if (active_c_file->sectorseek > active_c_file->lastsector) {
 												// dit was de laatste sector. We zijn nu dus klaar.
 												active_c_file->done = TRUE;
 											} else {
@@ -183,7 +165,14 @@ void cdreadycallback(uchar status, uchar * result)
 		}
 	}
 	
-	if ((active_c_file == 0) || (active_c_file->done == TRUE) || (urgent_c_file != 0)) {
+	if (active_c_file) {
+		if (active_c_file->done == TRUE) {
+			active_c_file->busy = FALSE;
+			active_c_file = 0;
+		}
+	}
+	
+	if ((active_c_file == 0) || (urgent_c_file != 0)) {
 		// look for new file and start again
 		
 		if (active_c_file) active_c_file->busy = FALSE;
@@ -269,7 +258,6 @@ void streaming_start()
 
 	if (is_cd == 0)	return;
 	
-	
 	// is er iets te streamen ?
 	
 		if (c_list->first == 0) return;
@@ -282,7 +270,7 @@ void streaming_start()
 		// streaming was niet (meer) bezig
 		
 		if (urgent_c_file) {
-			c_file = urgent_c_file;
+			c_file = (Stream *) urgent_c_file;
 			urgent_c_file = 0;
 			c_file_start(c_file);
 			return;
@@ -315,10 +303,24 @@ void stream_add(C_File * c_file)
 		return;
 	}
 	
+	if ((int) c_file == -1) {
+		guru("stream_add: c_file = -1");
+		return;
+	}
+	
 	c_file->done = c_file->busy = 0;
-	c_file->sectorseek = 0;
+
+	// some bounds checks
+		if (c_file->lastsector > c_file->maxsector) c_file->lastsector = c_file->maxsector;
+		if (c_file->firstsector > c_file->lastsector) c_file->firstsector = 0;
+				
+		if (c_file->sectorseek > c_file->lastsector) c_file->sectorseek = c_file->firstsector;
+		if (c_file->sectorseek < c_file->firstsector) c_file->sectorseek = c_file->firstsector;
 
 	if (c_file->index == NULL) {
+		// nieuwe stroom altijd rewinden
+			c_file->sectorseek = c_file->firstsector;
+
 		c_file->index = callocN(c_file->maxsector + 1, "c_file->index");
 	
 		EnterCriticalSection();
@@ -340,14 +342,18 @@ void stream_remove(C_File * c_file)
 		return;
 	}
 	
-	if (c_file->index) {
-		c_file->done = TRUE;
-		while(c_file->busy);
-		
+	if ((int) c_file == -1) {
+		guru("stream_remove: c_file = -1");
+		return;
+	}
+	
+	if (c_file->index) {			
 		EnterCriticalSection();
+			c_file->done = TRUE;
+			if (c_file == active_c_file) active_c_file = 0;
 			remlink(c_list, c_file);	
 		ExitCriticalSection();
-	
+
 		for (i = 0; i <= c_file->maxsector; i++) {
 			if (index = c_file->index[i]) {
 				c_in_use[index] = 0;
@@ -361,3 +367,66 @@ void stream_remove(C_File * c_file)
 }
 
 
+void stream_close(C_File * c_file)
+{
+	int i, index;
+	
+	if (c_file == 0) {
+		guru("stream_close: c_file = NULL");
+		return;
+	}
+
+	if ((int) c_file == -1) {
+		guru("stream_close: c_file = -1");
+		return;
+	}
+
+	close((int) c_file);
+}
+
+C_File * stream_open(char * name, int flags)
+{
+	int fd;
+	
+	fd = open(name, flags);
+	
+	if (fd == -1) {
+		printf("stream_open: can not open %s\n", name);
+	}
+	return((C_File *) fd);
+}
+
+void stream_set_minmax(C_File * c_file, int min, int max)
+{
+	if (is_cd == 0) return;
+	
+	if (c_file == 0) {
+		guru("stream_set_minmax: c_file = NULL");
+		return;
+	}
+
+	if ((int) c_file == -1) {
+		guru("stream_set_minmax: c_file = -1");
+		return;
+	}
+
+	if (max < min)
+	{
+		int t;
+		t = max; max = min; min = t;
+	}
+	
+	if (min < 0) min = 0;
+	if (min > c_file->maxsector) min = c_file->maxsector;
+	
+	if (max == -1) max = c_file->maxsector;
+	if (max < 0) max = 0;
+	if (max > c_file->maxsector) max = c_file->maxsector;
+	
+	c_file->firstsector = min;
+	c_file->lastsector = max;
+	
+	c_file->done = FALSE;
+	
+	streaming_start();
+}

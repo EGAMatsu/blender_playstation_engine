@@ -470,15 +470,13 @@ void * calloc(size_t len, size_t count)
 {
 	uchar * pnt;
 	
-	//guru("hi hi, in calloc\n");
+	guru("hi hi, in calloc\n");
 	
 	pnt = malloc(len * count);
 	if (pnt) bzero(pnt, len * count);
 	
 	return(pnt);
 }
-
-// Why the fuck did you do that, blender team?
 
 void * realloc(void * pnt, size_t len)
 {
@@ -549,7 +547,10 @@ char *block,*error;
 
 void (*memory_error)() = MemorY_ErroR;
 
-void *mallocN(long len, char *str) {
+void *mallocN(len,str)
+long len;
+char *str;
+{
 	MemHead *memh;
 	MemTail *memt;
 	static char buf[128];
@@ -562,41 +563,43 @@ void *mallocN(long len, char *str) {
 
 	mallocNmalloc = TRUE;
 	
-	len = (len + 3 ) & ~3; 	/* units of 4 */
+	len = (len + 3 ) & ~3; 	/* eenheden van 4 */
 	memh=(MemHead *)malloc(len+sizeof(MemHead)+sizeof(MemTail));
 
 	mallocNmalloc = FALSE;
 	
-	if(memh==0) {
-		sprintf(buf, "Malloc returns nill:\nlen=%d in %s\n",len,str);
-		guru(buf);
-		return 0;
+	if(memh!=0) {
+		if( ((int)memh)+len > (int) MALLOCSTA + MALLOCSIZE ) {
+			sprintf(gurustr, "Malloc beyond max: \nlen=%d in %s\n",len, str);
+			sprintf(gurustr, "Malloc overflow in %s: \n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
+			guru(gurustr);
+			
+			// return 0;
+			
+		}
+
+		memh->tag1 = MEMTAG1;
+		memh->name = str;
+		memh->nextname = 0;
+		memh->len = len;
+		memh->level = current_mem_level;
+		memh->tag2 = MEMTAG2;
+
+		memt = (MemTail *)(((char *) memh) + sizeof(MemHead) + len);
+		memt->tag3 = MEMTAG3;
+
+		addtail(membase,&memh->next);
+		if (memh->next) memh->nextname = MEMNEXT(memh->next)->name;
+
+		totblock++;
+		mem_in_use += len;
+		return (++memh);
 	}
 	
-	if( ((int)memh)+len > (int) MALLOCSTA + MALLOCSIZE ) {
-		sprintf(gurustr, "Malloc beyond max:\nlen=%d in %s\n",len, str);
-		sprintf(gurustr, "Malloc overflow in %s:\n%x > %x\n", str, (int)memh+len, (int) MALLOCSTA + MALLOCSIZE);
-		guru(gurustr);
-		free(memh);
-		return 0;
-	}
-
-	memh->tag1 = MEMTAG1;
-	memh->name = str;
-	memh->nextname = 0;
-	memh->len = len;
-	memh->level = current_mem_level;
-	memh->tag2 = MEMTAG2;
-
-	memt = (MemTail *)(((char *) memh) + sizeof(MemHead) + len);
-	memt->tag3 = MEMTAG3;
-
-	addtail(membase,&memh->next);
-	if (memh->next) memh->nextname = MEMNEXT(memh->next)->name;
-
-	totblock++;
-	mem_in_use += len;
-	return memh; // return the allocated memory, not the next block
+	sprintf(buf, "Malloc returns nill: len=%d in %s\n",len,str);
+	guru(buf);
+	
+	return 0;
 }
 
 void *callocN(len,str)
@@ -910,26 +913,21 @@ void init_psxutil()
 	ResetCallback();
 
 	// first check if we're running on the pc or the ps
-	is_cd = 0;
-	/*
-		DISABLE CD TO PREVENT POSSIBLE HEAP CRASH IN THE FUTURE.
-
-		THIS IS A TEMPORARY THING, ENABLE LATER.
-	*/
-		//CdInit();
-		//CdSetDebug(0);
 	
-		//if (CdControl(CdlNop, 0, result)) is_cd = 1;
-		//else is_cd = 0;
+		CdInit();
+		CdSetDebug(0);
+	
+		if (CdControl(CdlNop, 0, result)) is_cd = 1;
+		else is_cd = 0;
 
 	// initialiseer malloc
 	
 		if (is_cd) {
 			// dit is 1.5 megabyte (vanaf 0.48Mb) gereserveerd
-			InitHeap2((void *) 0x80078000, 0x180000);
+			// InitHeap2((void *) 0x80078000, 0x180000);
 		} else {
 			// dit is 2 megabyte (vanaf 2 Mb)gereserveerd
-			InitHeap2((void *) MALLOCSTA, MALLOCSIZE);
+			// InitHeap2((void *) MALLOCSTA, MALLOCSIZE);
 		}
 	
 	// onschuldige initialiseer functies

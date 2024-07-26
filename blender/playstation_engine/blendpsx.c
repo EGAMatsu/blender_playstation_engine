@@ -169,23 +169,18 @@ void free_main()
 
 void init_blendpsx()
 {
-    memset(&G, 0, sizeof(pGlobal));
-    
-	printf("Starting the game...\n");
-		G.main = (pMain*)malloc(sizeof(pMain));
-		memset(G.main, 0, sizeof(pMain));			// Unsafe, but worth a shot.
+	
+	bzero((char *)&G, sizeof(pGlobal));
+	
+	G.main= callocN(sizeof(pMain), "initglobals");
+	addtail(&G.mainbase, G.main);
+	
+	strcpy(G.main->name, "start.psx");
+	G.f |= G_LOADFILE;
+	
+	G.maxsect= 9;
+	G.defaultmaterial.ref= 409;
 
-		printf("Game has not started, assume all is okay and continue...\n");
-    
-    addtail(&G.mainbase, G.main);
-    
-    strcpy(G.main->name, "start.psx");
-    G.f |= G_LOADFILE;
-    
-    G.maxsect = 9;
-    G.defaultmaterial.ref = 409;
-
-	printf("Game is started.\n");
 }
 
 void end_blendpsx()

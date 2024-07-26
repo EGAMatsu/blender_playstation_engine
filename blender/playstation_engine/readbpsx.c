@@ -29,12 +29,6 @@
 #include "psxblend.h"
 #include "psxgraph.h"
 
-int fb_free() {
-	return 0;
-}
-int fb_alloc() {
-	return 0;
-}
 void PCopen() {
 	return 0;
 }

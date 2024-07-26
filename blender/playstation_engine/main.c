@@ -33,28 +33,6 @@ int old_sp;
 short debuginfo= 0;
 char str[160];	// van de stack af 
 
-int psxprint_ot(int font, int x, int y, unsigned char *string, int unknown0, int unknown1) {
-	return 0;
-}
-void exitprint() {
-	return 0;
-}
-void free_font() {
-	return 0;
-}
-int set_font() {
-	return 0;
-}
-int set_font_prop() {
-	return 0;
-}
-void load_menu_font() {
-	return 0;
-}
-void free_menu_font() {
-	return 0;
-}
-
 void draw_text_info()
 {
 	extern int sw_time, tots4, tots16;
@@ -227,9 +205,9 @@ void exit_func()
 	cdb->draw.r0= cdb->draw.g0= 0;
 	swapbuffers();
 	frontbuffer(1);
-	exitprint();
+	//exitprint();
 	if(G.font) free_font(G.font);
-	free_menu_font();
+	//free_menu_font();
 
 	end_sectors();
 	//movie_exit();
@@ -353,7 +331,7 @@ void make_menu()
 	}
 
 	frontbuffer(1);
-	event = do_menu(1, &val);
+	event= do_menu(1, &val);
 	if(event) do_event(event, val);
 	frontbuffer(0);
 
@@ -381,30 +359,33 @@ void test()
 
 	PRINT3(d,d,d, new.vx, new.vy, new.vz);
 }
+
+int main();
+__libc_start_main()
+{
+	main();
+}
  
 int main() {
 	int a, padd, event, val;
-	printf("Blender Game Engine is init...\n");
 
-	printf("Starting PSXUTIL.\n");
-		init_psxutil();	/* malloc */
-	printf("Starting Display.\n");
-		init_display();	// Causes crash, 226 -> ~232
+	init_psxutil();	/* malloc */
+	init_display();
 	set_divbuffer();
 	init_blackpoly();
 	init_blendpsx();
-	//init_sound();
-	printf("Loading font.\n");
-		load_menu_font();
+	// init_sound();
+	//load_menu_font();
 	
 
 	// set_dcache(1);	/* psxutil.c */
 
 	fb_add(960, 0,   64, 256, "MenuFont");
 	G.font= set_font("fonts\\cour8.psf", 960, 0);
+	
 	if(G.font==0) {
 		error("Can't find font");
-		//exit(0);
+		exit(0);
 	}
 	set_font_prop(G.font, 0);
 
@@ -418,15 +399,13 @@ int main() {
 
 	/* main loop */
 	while(TRUE) {
-		/*
+		
 		if(G.f & G_LOADFILE) read_file();
 		if(G.f & G_RESTART) G.f &= ~G_RESTART;
 		if(G.f & G_QUIT) exit_func();
 
 		if(G.scene) sector_go();
 		else make_menu(); 
-		*/
-		make_menu(); 
 	}
 	return 0;
 }

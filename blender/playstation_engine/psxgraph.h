@@ -36,7 +36,7 @@
 #define SCR_Z		(256)		/* screen depth (h) */
 #define OTLEN		12			/* ordering table bit width */
 #define	OTSIZE		(1<<OTLEN)	/* ordering table size */
-#define	PBUFSIZE	(105000)	/* doen: test waarom deze bij overflow bugt (Rough translation: Do: Test why this one causes overflow bug)*/
+#define	PBUFSIZE	(105000)	/* doen: test waarom deze bij overflow bugt */
 #define	DBUFSIZE	(35000)	
 
 #define R_OTSIZE	(32)		/* ride otsize */
